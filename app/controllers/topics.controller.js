@@ -5,5 +5,5 @@ exports.getAllTopics = (_, res, next) => {
     .then((topics) => {
         res.status(200).send({ topics })
     })
-    
+    .catch(next)
 }
