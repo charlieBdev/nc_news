@@ -3,7 +3,7 @@ const testData = require('../db/data/test-data');
 const request = require('supertest')
 const app = require('../app/app')
 const db = require('../db/connection')
-const { endpoints } = require('../endpoints')
+const endpoints = require('../endpoints.json')
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
