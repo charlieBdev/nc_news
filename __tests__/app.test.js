@@ -8,7 +8,7 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe('GET /api/topics', () => {
-    test('should respond with an array of topic objects', () => {
+    test('200: should respond with an array of topic objects', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
