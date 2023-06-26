@@ -23,3 +23,17 @@ describe('GET /api/topics', () => {
         })
     });
 });
+describe('GET /api', () => {
+    test('should return an object', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body }) => {
+            const endpointKeys = Object.keys(body)
+            const endpointKeysLength = endpointKeys.length
+            expect(typeof body).toBe('object')
+            expect(Array.isArray(body)).toBe(false)
+            expect(endpointKeysLength).toBe(3)
+        })
+    });
+});
