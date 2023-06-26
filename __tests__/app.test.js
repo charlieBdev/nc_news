@@ -3,6 +3,7 @@ const testData = require('../db/data/test-data');
 const request = require('supertest')
 const app = require('../app/app')
 const db = require('../db/connection')
+const { endpoints } = require('../endpoints')
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -24,7 +25,7 @@ describe('GET /api/topics', () => {
     });
 });
 describe('GET /api', () => {
-    test('should return an object', () => {
+    test('should return an object of correct length with correct content', () => {
         return request(app)
         .get('/api')
         .expect(200)
@@ -33,7 +34,11 @@ describe('GET /api', () => {
             const endpointKeysLength = endpointKeys.length
             expect(typeof body).toBe('object')
             expect(Array.isArray(body)).toBe(false)
-            expect(endpointKeysLength).toBe(3)
+            for (let endpoint in body) {
+                expect(body[endpoint]).toHaveProperty('description'), expect.any(String)
+            }
+            expect(body).toEqual(endpoints)
+            expect(endpointKeysLength).toBe(Object.keys(endpoints).length)
         })
     });
 });
