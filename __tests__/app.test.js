@@ -108,7 +108,7 @@ describe('GET /api/articles', () => {
             })
         })
     });
-    test('400: Handle an invalid path/typo', () => {
+    test('404: Handle an invalid path/typo', () => {
         return request(app)
         .get('/api/articlessss')
         .expect(404)
