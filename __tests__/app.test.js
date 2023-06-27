@@ -86,3 +86,20 @@ describe('GET /api/articles/:article_id', () => {
         })
     });
 });
+// describe('200: should get all comments for an article', () => {
+//     return request(app)
+//     .get('/api/articles/:article_id/comments')
+//     .expect(200)
+//     .then(({ body }) => {
+//         expect(body.length).toBe(articles.length)
+//         expect(body).toBeSortedBy('created_at', { descending: true })
+//         body.forEach((article) => {
+//             expect(article).toHaveProperty('comment_id'), expect.any(String)
+//             expect(article).toHaveProperty('votes'), expect.any(Number)
+//             expect(article).toHaveProperty('created_at'), expect.any(String)
+//             expect(article).toHaveProperty('votes'), expect.any(Number)
+//             expect(article).toHaveProperty('author'), expect.any(String)
+//             expect(article).toHaveProperty('article_id'), expect.any(Number)
+//         })
+//     })
+// });
