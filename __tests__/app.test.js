@@ -5,7 +5,8 @@ const app = require('../app/app')
 const db = require('../db/connection')
 const endpoints = require('../endpoints.json')
 const articles = require('../db/data/test-data/articles')
-
+const comments = require('../db/data/test-data/comments')
+ 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
@@ -75,7 +76,7 @@ describe('GET /api/articles/:article_id', () => {
         .get('/api/articles/99999999')
         .expect(404)
         .then(({ body }) => {
-            expect(body.msg).toBe('Not found')
+            expect(body.msg).toBe('Article not found')
         })
     });
     test('400: should handle invalid ID', () => {
@@ -116,4 +117,41 @@ describe('GET /api/articles', () => {
             expect(body.msg).toBe('Not found')
         })
     })
+});
+describe('GET /api/articles/:article_id/comments', () => {
+    test('200: should return an array of comments for a given article', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.length).toBeGreaterThan(0)
+            const resultsArr = comments.filter((comment) => { return comment.article_id === 1 })
+            expect(body.length).toBe(resultsArr.length)
+            body.forEach((comment) => {
+                expect(comment).toHaveProperty('comment_id'), expect.any(Number)
+                expect(comment).toHaveProperty('votes'), expect.any(Number)
+                expect(comment).toHaveProperty('created_at'), expect.any(String)
+                expect(comment).toHaveProperty('author'), expect.any(String)
+                expect(comment).toHaveProperty('body'), expect.any(String)
+                expect(comment.article_id).toBe(1)
+            })
+            expect(body).toBeSortedBy('created_at', { descending: true })
+        })
+    });
+    test('404: should return an error if no records found', () => {
+        return request(app)
+        .get('/api/articles/99999/comments')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Article not found')
+        })
+    });
+    test('400: should handle a bad request/invalid id', () => {
+        return request(app)
+        .get('/api/articles/dogs/comments')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Invalid input')
+        })
+    });
 });
