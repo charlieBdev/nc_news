@@ -42,3 +42,47 @@ describe('GET /api', () => {
         })
     });
 });
+describe('All bad paths', () => {
+    test('404: should return a custom error for a bad path', () => {
+        return request(app)
+        .get('/api/notAPath')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Not found')
+        })
+    });
+});
+describe('GET /api/articles/:article_id', () => {
+    test('200: should return an article object', () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({ body }) => {
+            const { article } = body
+            expect(article.article_id).toBe(1)
+            expect(article).toHaveProperty('author'), expect.any(String)
+            expect(article).toHaveProperty('title'), expect.any(String)
+            expect(article).toHaveProperty('body'), expect.any(String)
+            expect(article).toHaveProperty('topic'), expect.any(String)
+            expect(article).toHaveProperty('created_at'), expect.any(Date)
+            expect(article).toHaveProperty('votes'), expect.any(Number)
+            expect(article).toHaveProperty('article_img_url'), expect.any(String)
+        })  
+    });
+    test('404: should handle an ID that does not exist', () => {
+        return request(app)
+        .get('/api/articles/99999999')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Not found')
+        })
+    });
+    test('400: should handle invalid ID', () => {
+        return request(app)
+        .get('/api/articles/notAnId')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    });
+});
