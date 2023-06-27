@@ -4,6 +4,7 @@ const request = require('supertest')
 const app = require('../app/app')
 const db = require('../db/connection')
 const endpoints = require('../endpoints.json')
+const articles = require('../db/data/test-data/articles')
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -60,11 +61,11 @@ describe('GET /api/articles/:article_id', () => {
         .then(({ body }) => {
             const { article } = body
             expect(article.article_id).toBe(1)
-            expect(article).toHaveProperty('author'), expect.any(String)
             expect(article).toHaveProperty('title'), expect.any(String)
-            expect(article).toHaveProperty('body'), expect.any(String)
             expect(article).toHaveProperty('topic'), expect.any(String)
-            expect(article).toHaveProperty('created_at'), expect.any(Date)
+            expect(article).toHaveProperty('author'), expect.any(String)
+            expect(article).toHaveProperty('body'), expect.any(String)
+            expect(article).toHaveProperty('created_at'), expect.any(String)
             expect(article).toHaveProperty('votes'), expect.any(Number)
             expect(article).toHaveProperty('article_img_url'), expect.any(String)
         })  
@@ -86,20 +87,33 @@ describe('GET /api/articles/:article_id', () => {
         })
     });
 });
-// describe('200: should get all comments for an article', () => {
-//     return request(app)
-//     .get('/api/articles/:article_id/comments')
-//     .expect(200)
-//     .then(({ body }) => {
-//         expect(body.length).toBe(articles.length)
-//         expect(body).toBeSortedBy('created_at', { descending: true })
-//         body.forEach((article) => {
-//             expect(article).toHaveProperty('comment_id'), expect.any(String)
-//             expect(article).toHaveProperty('votes'), expect.any(Number)
-//             expect(article).toHaveProperty('created_at'), expect.any(String)
-//             expect(article).toHaveProperty('votes'), expect.any(Number)
-//             expect(article).toHaveProperty('author'), expect.any(String)
-//             expect(article).toHaveProperty('article_id'), expect.any(Number)
-//         })
-//     })
-// });
+describe('GET /api/articles', () => {
+    test('200 should return all articles', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body).toBeSortedBy('created_at', { descending: true })
+            expect(body.length).toBe(articles.length)
+            body.forEach((article) => {
+                expect(article).toHaveProperty('author'), expect.any(String)
+                expect(article).toHaveProperty('title'), expect.any(String)
+                expect(article).toHaveProperty('article_id'), expect.any(Number)
+                expect(article).toHaveProperty('topic'), expect.any(String)
+                expect(article).toHaveProperty('created_at'), expect.any(String)
+                expect(article).toHaveProperty('votes'), expect.any(Number)
+                expect(article).toHaveProperty('article_img_url'), expect.any(String)
+                expect(article).toHaveProperty('comment_count'), expect.any(Number)
+                expect(article).not.toHaveProperty('body')
+            })
+        })
+    });
+    test('404: Handle an invalid path/typo', () => {
+        return request(app)
+        .get('/api/articlessss')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Not found')
+        })
+    })
+});
