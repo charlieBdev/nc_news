@@ -10,7 +10,7 @@ const commentsData = require('../db/data/test-data/comments')
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe('All bad paths', () => {
+describe('ANY bad paths', () => {
     test('404: should return a custom error for a bad path', () => {
         return request(app)
         .get('/api/notAPath')
@@ -53,14 +53,6 @@ describe('GET /api/topics', () => {
             })
         })
     });
-    test('404: should handle an invalid path/typo', () => {
-        return request(app)
-        .get('/api/topicssss')
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Not found')
-        })
-    });
 });
 describe('GET /api/articles', () => {
     test('200: should return all articles', () => {
@@ -84,14 +76,6 @@ describe('GET /api/articles', () => {
             })
         })
     });
-    test('404: should handle an invalid path/typo', () => {
-        return request(app)
-        .get('/api/articlessss')
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Not found')
-        })
-    })
 });
 describe('GET /api/articles/:article_id', () => {
     test('200: should return an article object', () => {
@@ -110,7 +94,7 @@ describe('GET /api/articles/:article_id', () => {
             expect(article).toHaveProperty('article_img_url'), expect.any(String)
         })  
     });
-    test('400: should handle invalid ID', () => {
+    test('400: should handle invalid article_id', () => {
         return request(app)
         .get('/api/articles/notAnId')
         .expect(400)
@@ -118,7 +102,7 @@ describe('GET /api/articles/:article_id', () => {
             expect(body.msg).toBe('Bad request')
         })
     });
-    test('404: should handle an ID that does not exist', () => {
+    test('404: should handle an article_id that does not exist', () => {
         return request(app)
         .get('/api/articles/99999999')
         .expect(404)
@@ -156,7 +140,7 @@ describe('GET /api/articles/:article_id/comments', () => {
             expect(body.comments).toEqual([])
         })
     });
-    test('400: should handle a bad request/invalid id', () => {
+    test('400: should handle an invalid article_id', () => {
         return request(app)
         .get('/api/articles/dogs/comments')
         .expect(400)

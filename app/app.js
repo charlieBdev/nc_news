@@ -15,7 +15,7 @@ app.get("/api/articles/:article_id", getArticleById)
 app.get('/api/articles', getAllArticles)
 
 
-app.get("*", (_, res) => {
+app.all("*", (_, res) => {
   res.status(404).send({ msg: "Not found" })
 })
 
