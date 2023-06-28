@@ -1,6 +1,6 @@
 const express = require("express")
 
-const { handleCustomErrors, handlePsqlErrors, handleServerErrors } = require("./errors/index")
+const { handleCustomErrors, handleServerErrors } = require("./errors/index")
 
 const { getAllTopics } = require("../app/controllers/topics.controller")
 const { getEndpoints } = require("./controllers/endpoints.controller")
@@ -20,7 +20,6 @@ app.get("*", (_, res) => {
 })
 
 app.use(handleCustomErrors)
-app.use(handlePsqlErrors)
 app.use(handleServerErrors)
 
 module.exports = app

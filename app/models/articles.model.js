@@ -34,9 +34,6 @@ exports.selectArticleComments = (article_id) => {
     `
     return db.query(queryStr, [article_id])
     .then(({ rows }) => {
-        if(!rows.length) {
-            return this.selectArticleById(article_id)
-        }
         return rows
     })
 }
