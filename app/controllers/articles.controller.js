@@ -1,11 +1,10 @@
-const { selectArticleById, selectAllArticles } = require("../models/articles.model")
+const { selectArticleById, selectAllArticles, selectArticleComments } = require("../models/articles.model")
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params
 
     selectArticleById(article_id)
     .then((article) => {
-        article.created_at = article.created_at
         res.status(200).send({ article })
     })
     .catch(next)
@@ -14,6 +13,24 @@ exports.getArticleById = (req, res, next) => {
 exports.getAllArticles = (_, res, next) => {
     selectAllArticles()
     .then((articles) => {
-        res.status(200).send(articles)
+        res.status(200).send({ articles })
     })
+    .catch(next)
+}
+
+exports.getArticleComments = (req, res, next) => {
+    const { article_id } = req.params
+
+    const promises = [selectArticleComments(article_id), selectArticleById(article_id)]
+
+    Promise.all(promises)
+
+    .then((resolvedPromises) => {
+        const comments = resolvedPromises[0]
+        if (!comments) {
+            res.status(200).send([])
+        }
+        res.status(200).send({ comments })
+    })
+    .catch(next)
 }

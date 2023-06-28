@@ -1,5 +1,4 @@
 const db = require("../../db/connection")
-const { convertTimestampToDate } = require("../../db/seeds/utils")
 
 exports.selectArticleById = (article_id) => {
   
@@ -12,7 +11,7 @@ exports.selectArticleById = (article_id) => {
   `
   return db.query(queryString, [article_id]).then(({ rows }) => {
     if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Not found" })
+      return Promise.reject({ status: 404, msg: "Article not found" })
     } else {
       return rows[0]
     }
@@ -28,3 +27,14 @@ exports.selectAllArticles = () => {
             return rows
         })
 }
+
+exports.selectArticleComments = (article_id) => {
+    const queryStr = `
+    SELECT * FROM comments JOIN articles ON article_id(comments) = article_id(articles) WHERE article_id(comments) = $1 ORDER BY created_at(comments) ASC; 
+    `
+    return db.query(queryStr, [article_id])
+    .then(({ rows }) => {
+        return rows
+    })
+}
+
