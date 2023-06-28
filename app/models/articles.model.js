@@ -2,9 +2,9 @@ const db = require("../../db/connection")
 
 exports.selectArticleById = (article_id) => {
   
-  if(!Number(article_id)) {
-    return Promise.reject({ status: 400, msg: 'Bad request' })
-  }
+  // if(!Number(article_id)) {
+  //   return Promise.reject({ status: 400, msg: 'Bad request' })
+  // }
   
   const queryString = `
     SELECT * FROM articles WHERE article_id = $1;
@@ -12,9 +12,8 @@ exports.selectArticleById = (article_id) => {
   return db.query(queryString, [article_id]).then(({ rows }) => {
     if (rows.length === 0) {
       return Promise.reject({ status: 404, msg: "Article not found" })
-    } else {
-      return rows[0]
     }
+    return rows[0]
   })
 }
 
@@ -33,8 +32,18 @@ exports.selectArticleComments = (article_id) => {
     SELECT * FROM comments JOIN articles ON article_id(comments) = article_id(articles) WHERE article_id(comments) = $1 ORDER BY created_at(comments) ASC; 
     `
     return db.query(queryStr, [article_id])
-    .then(({ rows }) => {
-        return rows
-    })
+      .then(({ rows }) => {
+          return rows
+      })
 }
 
+exports.insertArticleComment = (article_id, username, body) => {
+  const queryStr = `
+  INSERT INTO comments (body, article_id, author)
+  VALUES ($1, $2, $3) RETURNING *;
+  `
+  return db.query(queryStr, [body, article_id, username])
+    .then(({ rows }) => {
+      return rows[0]
+    })
+}

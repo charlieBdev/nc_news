@@ -58,5 +58,16 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "responds with all comments for a given article",
+    "exampleResponse": {
+      "comment_id": 19,
+      "body": "The human brain is an incredible pattern-matching machine.",
+      "article_id": 1,
+      "author": "lurker",
+      "votes": 0,
+      "created_at": "2023-06-28T11:06:30.686Z"
+    }
   }
 }

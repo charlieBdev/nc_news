@@ -99,7 +99,7 @@ describe('GET /api/articles/:article_id', () => {
         .get('/api/articles/notAnId')
         .expect(400)
         .then(({ body }) => {
-            expect(body.msg).toBe('Bad request')
+            expect(body.msg).toBe('Invalid input')
         })
     });
     test('404: should handle an article_id that does not exist', () => {
@@ -145,7 +145,7 @@ describe('GET /api/articles/:article_id/comments', () => {
         .get('/api/articles/dogs/comments')
         .expect(400)
         .then(({ body }) => {
-            expect(body.msg).toBe('Bad request')
+            expect(body.msg).toBe('Invalid input')
         })
     });
     test('404: should return an error if no records found', () => {
@@ -156,4 +156,26 @@ describe('GET /api/articles/:article_id/comments', () => {
             expect(body.msg).toBe('Article not found')
         })
     });
+});
+describe('POST /api/articles/:article_id/comments', () => {
+    test('201: should add a comment for an article and respond with the posted comment', () => {
+        const commentToPost = {
+            username: 'lurker',
+            body: 'The human brain is an incredible pattern-matching machine.'
+        }
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(commentToPost)
+        .then(({ body }) => {
+            const { commentAdded } = body
+            expect(Object.keys(commentAdded).length).toBe(6)
+            expect(commentAdded.article_id).toBe(1)
+            expect(commentAdded.author).toBe('lurker')
+            expect(commentAdded.body).toBe('The human brain is an incredible pattern-matching machine.')
+            expect(commentAdded).toHaveProperty('comment_id'), expect.any(Number)
+            expect(commentAdded).toHaveProperty('created_at'), expect.any(String)
+            expect(commentAdded).toHaveProperty('votes'), expect.any(Number)
+        })
+    });
+    
 });
