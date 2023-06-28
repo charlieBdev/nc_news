@@ -39,8 +39,8 @@ exports.addArticleComment = (req, res, next) => {
     const { article_id } = req.params
     const { username, body } = req.body
     insertArticleComment(article_id, username, body)
-    .then((commentAdded) => {
-        res.status(201).send({ commentAdded })
-    })
-    .catch(next)
+        .then((commentAdded) => {
+            res.status(201).send({ commentAdded })
+        })
+        .catch(next)
 }
