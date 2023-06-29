@@ -4,7 +4,7 @@ const { handleCustomErrors, handlePsqlErrors, handleServerErrors } = require("./
 
 const { getAllTopics } = require("../app/controllers/topics.controller")
 const { getEndpoints } = require("./controllers/endpoints.controller")
-const { getArticleById, getAllArticles, getArticleComments, addArticleComment } = require("./controllers/articles.controller")
+const { getArticleById, getAllArticles, getArticleComments, addArticleComment, incrementArticleVotes } = require("./controllers/articles.controller")
 
 const app = express()
 
@@ -18,6 +18,7 @@ app.get('/api/articles', getAllArticles)
 
 app.post('/api/articles/:article_id/comments', addArticleComment)
 
+app.patch('/api/articles/:article_id', incrementArticleVotes)
 
 app.all("*", (_, res) => {
   res.status(404).send({ msg: 'Not found' })
