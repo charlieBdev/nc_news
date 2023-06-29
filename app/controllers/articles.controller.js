@@ -1,4 +1,5 @@
 const { selectArticleById, selectAllArticles, selectArticleComments, insertArticleComment, changeArticleVotes } = require("../models/articles.model")
+const { checkTopicExists } = require("../utils")
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params
@@ -10,9 +11,23 @@ exports.getArticleById = (req, res, next) => {
     .catch(next)
 }
 
-exports.getAllArticles = (_, res, next) => {
-    selectAllArticles()
-    .then((articles) => {
+exports.getAllArticles = (req, res, next) => {
+    const { topic } = req.query
+    
+    const promises = [selectAllArticles(topic)]
+
+    if (topic) {
+        promises.push(checkTopicExists(topic))
+    }
+
+    Promise.all(promises)
+
+    .then((resolvedPromises) => {
+        const articles = resolvedPromises[0]
+        console.log(articles, '<<< articles')
+        if (articles.length === 0) {
+            res.status(200).send([])
+        }
         res.status(200).send({ articles })
     })
     .catch(next)
