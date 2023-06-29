@@ -6,6 +6,7 @@ const db = require('../db/connection')
 const endpoints = require('../endpoints.json')
 const articlesData = require('../db/data/test-data/articles')
 const commentsData = require('../db/data/test-data/comments')
+const usersData = require('../db/data/test-data/users')
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -339,6 +340,23 @@ describe('PATCH /api/articles/:article_id', () => {
             .expect(404)
             .then(({ body }) => {
                 expect(body.msg).toBe('Article not found')
+            })
+    });
+});
+describe('GET /api/users', () => {
+    test('200: should get all users', () => {
+        return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(({ body }) => {
+                const { allUsers } = body
+                expect(allUsers.length).toBe(usersData.length)
+                expect(allUsers).toEqual(usersData)
+                allUsers.forEach((user) => {
+                    expect(user).toHaveProperty('username'), expect.any(String)
+                    expect(user).toHaveProperty('name'), expect.any(String)
+                    expect(user).toHaveProperty('avatar_url'), expect.any(String)
+                })
             })
     });
 });
