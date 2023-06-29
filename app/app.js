@@ -2,10 +2,11 @@ const express = require("express")
 
 const { handleCustomErrors, handlePsqlErrors, handleServerErrors } = require("./errors/index")
 
-const { getAllTopics } = require("../app/controllers/topics.controller")
 const { getEndpoints } = require("./controllers/endpoints.controller")
+const { getAllTopics } = require("../app/controllers/topics.controller")
 const { getArticleById, getAllArticles, getArticleComments, addArticleComment, incrementArticleVotes } = require("./controllers/articles.controller")
 const { getAllUsers } = require("./controllers/users.controller")
+const { deleteComment } = require("./controllers/comments.controller")
 
 const app = express()
 
@@ -21,6 +22,8 @@ app.get('/api/users', getAllUsers)
 app.post('/api/articles/:article_id/comments', addArticleComment)
 
 app.patch('/api/articles/:article_id', incrementArticleVotes)
+
+app.delete('/api/comments/:comment_id', deleteComment)
 
 app.all("*", (_, res) => {
   res.status(404).send({ msg: 'Not found' })
