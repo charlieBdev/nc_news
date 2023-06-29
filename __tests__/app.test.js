@@ -372,7 +372,7 @@ describe("DELETE /api/comments/:comment_id", () => {
         .delete("/api/comments/999999999")
         .expect(404)
         .then(({ body }) => {
-            expect(body.msg).toBe('Article not found')
+            expect(body.msg).toBe('Comment not found')
         })
     });
 });
@@ -567,10 +567,10 @@ describe('GET /api/users', () => {
             .get('/api/users')
             .expect(200)
             .then(({ body }) => {
-                const { allUsers } = body
-                expect(allUsers.length).toBe(usersData.length)
-                expect(allUsers).toEqual(usersData)
-                allUsers.forEach((user) => {
+                const { users } = body
+                expect(users.length).toBe(usersData.length)
+                expect(users).toEqual(usersData)
+                users.forEach((user) => {
                     expect(user).toHaveProperty('username'), expect.any(String)
                     expect(user).toHaveProperty('name'), expect.any(String)
                     expect(user).toHaveProperty('avatar_url'), expect.any(String)
