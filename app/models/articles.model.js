@@ -25,9 +25,6 @@ exports.selectAllArticles = (topic) => {
     GROUP BY article_id(articles) ORDER BY created_at(articles) DESC;
   `
   return db.query(queryStr, queryValues).then(({ rows }) => {
-    // if (rows.length === 0) {
-    //   return Promise.reject({ status: 404, msg: "Topic not found" })
-    // }
     return rows
   })
 }

@@ -24,11 +24,11 @@ exports.getAllArticles = (req, res, next) => {
 
     .then((resolvedPromises) => {
         const articles = resolvedPromises[0]
-        console.log(articles, '<<< articles')
         if (articles.length === 0) {
             res.status(200).send([])
+        } else {
+            res.status(200).send({ articles })
         }
-        res.status(200).send({ articles })
     })
     .catch(next)
 }
