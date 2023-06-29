@@ -1,11 +1,12 @@
-const seed = require("../db/seeds/seed")
-const testData = require("../db/data/test-data")
-const request = require("supertest")
-const app = require("../app/app")
-const db = require("../db/connection")
-const endpoints = require("../endpoints.json")
-const articlesData = require("../db/data/test-data/articles")
-const commentsData = require("../db/data/test-data/comments")
+const seed = require('../db/seeds/seed');
+const testData = require('../db/data/test-data');
+const request = require('supertest')
+const app = require('../app/app')
+const db = require('../db/connection')
+const endpoints = require('../endpoints.json')
+const articlesData = require('../db/data/test-data/articles')
+const commentsData = require('../db/data/test-data/comments')
+const usersData = require('../db/data/test-data/users')
 
 beforeEach(() => seed(testData))
 afterAll(() => db.end())
@@ -371,7 +372,210 @@ describe("DELETE /api/comments/:comment_id", () => {
         .delete("/api/comments/999999999")
         .expect(404)
         .then(({ body }) => {
-            expect(body.msg).toBe('Comment not found')
-    })
-  });
-})
+            expect(body.msg).toBe('Article not found')
+        })
+    });
+});
+describe('POST /api/articles/:article_id/comments', () => {
+    test('201: should add a comment for an article and respond with the posted comment', () => {
+        const commentToPost = {
+            username: 'lurker',
+            body: 'The human brain is an incredible pattern-matching machine.'
+        }
+        return request(app)
+            .post('/api/articles/1/comments')
+            .send(commentToPost)
+            .expect(201)
+            .then(({ body }) => {
+                const { commentAdded } = body
+                expect(Object.keys(commentAdded).length).toBe(6)
+                expect(commentAdded.article_id).toBe(1)
+                expect(commentAdded.author).toBe('lurker')
+                expect(commentAdded.body).toBe('The human brain is an incredible pattern-matching machine.')
+                expect(commentAdded).toHaveProperty('comment_id'), expect.any(Number)
+                expect(commentAdded).toHaveProperty('created_at'), expect.any(String)
+                expect(commentAdded).toHaveProperty('votes'), expect.any(Number)
+            })
+    });
+    test('201: should ignore extra properties', () => {
+        const commentToPost = {
+            username: 'lurker',
+            body: 'The sheep brain is not an incredible pattern-matching machine.',
+            votes: 5000,
+            notACol: 'whassup'
+        }
+        return request(app)
+            .post('/api/articles/1/comments')
+            .send(commentToPost)
+            .expect(201)
+            .then(({ body }) => {
+                const { commentAdded } = body
+                expect(Object.keys(commentAdded).length).toBe(6)
+                expect(commentAdded.article_id).toBe(1)
+                expect(commentAdded.author).toBe('lurker')
+                expect(commentAdded.body).toBe('The sheep brain is not an incredible pattern-matching machine.')
+                expect(commentAdded).toHaveProperty('comment_id'), expect.any(Number)
+                expect(commentAdded).toHaveProperty('created_at'), expect.any(String)
+                expect(commentAdded).toHaveProperty('votes'), expect.any(Number)
+            })
+    });
+    test('400: should handle invalid article_id', () => {
+        const commentToPost = {
+            username: 'lurker',
+            body: 'The human brain is an incredible pattern-matching machine.'
+        }
+        return request(app)
+            .post('/api/articles/NaN/comments')
+            .send(commentToPost)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
+    });
+    test('400: should handle input with NULL for required columns', () => {
+        const commentToPost = {
+            username: '',
+            body: 'The human brain is an incredible pattern-matching machine.'
+        }
+        return request(app)
+            .post('/api/articles/NaN/comments')
+            .send(commentToPost)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
+    });
+    test('400: should handle input with NULL for required columns', () => {
+        const commentToPost = {
+            username: 'lurker',
+            body: ''
+        }
+        return request(app)
+            .post('/api/articles/NaN/comments')
+            .send(commentToPost)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
+    });
+    test('404: should handle error for unfound article_id', () => {
+        const commentToPost = {
+            username: 'lurker',
+            body: 'The human brain is an incredible pattern-matching machine.'
+        }
+        return request(app)
+            .post('/api/articles/99999/comments')
+            .send(commentToPost)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not found')
+            })
+    });
+    test('404: should handle error for unfound username', () => {
+        const commentToPost = {
+            username: 'jeltonohn',
+            body: 'The human brain is an incredible pattern-matching machine.'
+        }
+        return request(app)
+            .post('/api/articles/1/comments')
+            .send(commentToPost)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not found')
+            })
+    });
+});
+describe('PATCH /api/articles/:article_id', () => {
+    test('200: should update votes by increment value for an article', () => {
+        const toSend = { inc_votes: 1 }
+        return request(app)
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(200)
+            .then(({ body }) => {
+                const { updatedArticle } = body
+                expect(updatedArticle.votes).toBe(101)
+            })
+    });
+    test('200: should update votes by increment value for an article', () => {
+        const toSend = { inc_votes: -1 }
+        return request(app)
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(200)
+            .then(({ body }) => {
+                const { updatedArticle } = body
+                expect(updatedArticle.votes).toBe(99)
+            })
+    });
+    test('200: should ignore extra values', () => {
+        const toSend = { inc_votes: -10, bananas: 5, body: 'oof' }
+        return request(app)
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(200)
+            .then(({ body }) => {
+                const { updatedArticle } = body
+                expect(updatedArticle.votes).toBe(90)
+                expect(Object.keys(updatedArticle).length).toBe(8)
+            })
+    });
+    test('400: should handle if no value passed', () => {
+        const toSend = { bananas: 5, body: 'oof' }
+        return request(app)
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
+    });
+    test('400: should handle if NaN', () => {
+        const toSend = { inc_votes: 'NaN' }
+        return request(app)
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
+    });
+    test('400: should handle if article_id is invalid', () => {
+        const toSend = { inc_votes: 1 }
+        return request(app)
+            .patch('/api/articles/NaN')
+            .send(toSend)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
+    });
+    test('404: should handle if article_id does not exist', () => {
+        const toSend = { inc_votes: 1 }
+        return request(app)
+            .patch('/api/articles/99999999')
+            .send(toSend)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Article not found')
+            })
+    });
+});
+describe('GET /api/users', () => {
+    test('200: should get all users', () => {
+        return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(({ body }) => {
+                const { allUsers } = body
+                expect(allUsers.length).toBe(usersData.length)
+                expect(allUsers).toEqual(usersData)
+                allUsers.forEach((user) => {
+                    expect(user).toHaveProperty('username'), expect.any(String)
+                    expect(user).toHaveProperty('name'), expect.any(String)
+                    expect(user).toHaveProperty('avatar_url'), expect.any(String)
+                })
+            })
+    });
+});
+
