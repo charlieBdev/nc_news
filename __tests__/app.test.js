@@ -178,6 +178,28 @@ describe('POST /api/articles/:article_id/comments', () => {
             expect(commentAdded).toHaveProperty('votes'), expect.any(Number)
         })
     });
+    test('201: should ignore extra properties', () => {
+        const commentToPost = {
+            username: 'lurker',
+            body: 'The sheep brain is not an incredible pattern-matching machine.',
+            votes: 5000,
+            notACol: 'whassup'
+        }
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(commentToPost)
+        .expect(201)
+        .then(({ body }) => {
+            const { commentAdded } = body
+            expect(Object.keys(commentAdded).length).toBe(6)
+            expect(commentAdded.article_id).toBe(1)
+            expect(commentAdded.author).toBe('lurker')
+            expect(commentAdded.body).toBe('The sheep brain is not an incredible pattern-matching machine.')
+            expect(commentAdded).toHaveProperty('comment_id'), expect.any(Number)
+            expect(commentAdded).toHaveProperty('created_at'), expect.any(String)
+            expect(commentAdded).toHaveProperty('votes'), expect.any(Number)
+        })
+    });
     test('400: should handle invalid article_id', () => {
         const commentToPost = {
             username: 'lurker',
