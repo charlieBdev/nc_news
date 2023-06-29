@@ -59,3 +59,4 @@ exports.incrementArticleVotes = (req, res, next) => {
     })
     .catch(next)
 }
+
