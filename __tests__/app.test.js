@@ -13,140 +13,140 @@ afterAll(() => db.end());
 describe('ANY bad paths', () => {
     test('404: should return a custom error for a bad path', () => {
         return request(app)
-        .get('/api/notAPath')
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Not found')
-        })
+            .get('/api/notAPath')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not found')
+            })
     });
 });
 describe('GET /api', () => {
     test('200: should return an object of correct length with correct content', () => {
         return request(app)
-        .get('/api')
-        .expect(200)
-        .then(({ body }) => {
-            const endpointKeys = Object.keys(body)
-            const endpointKeysLength = endpointKeys.length
-            expect(typeof body).toBe('object')
-            expect(Array.isArray(body)).toBe(false)
-            for (let endpoint in body) {
-                expect(body[endpoint]).toHaveProperty('description'), expect.any(String)
-            }
-            expect(body).toEqual(endpoints)
-            expect(endpointKeysLength).toBe(Object.keys(endpoints).length)
-        })
+            .get('/api')
+            .expect(200)
+            .then(({ body }) => {
+                const endpointKeys = Object.keys(body)
+                const endpointKeysLength = endpointKeys.length
+                expect(typeof body).toBe('object')
+                expect(Array.isArray(body)).toBe(false)
+                for (let endpoint in body) {
+                    expect(body[endpoint]).toHaveProperty('description'), expect.any(String)
+                }
+                expect(body).toEqual(endpoints)
+                expect(endpointKeysLength).toBe(Object.keys(endpoints).length)
+            })
     });
 });
 describe('GET /api/topics', () => {
     test('200: should respond with an array of topic objects', () => {
         return request(app)
-        .get('/api/topics')
-        .expect(200)
-        .then(({ body }) => {
-            const { topics } = body
-            expect(topics).toHaveLength(3)
-            expect(Array.isArray(topics)).toBe(true)
-            topics.forEach((topic) => {
-                expect(topic).toHaveProperty('description'), expect.any(String)
-                expect(topic).toHaveProperty('slug'), expect.any(String)
+            .get('/api/topics')
+            .expect(200)
+            .then(({ body }) => {
+                const { topics } = body
+                expect(topics).toHaveLength(3)
+                expect(Array.isArray(topics)).toBe(true)
+                topics.forEach((topic) => {
+                    expect(topic).toHaveProperty('description'), expect.any(String)
+                    expect(topic).toHaveProperty('slug'), expect.any(String)
+                })
             })
-        })
     });
 });
 describe('GET /api/articles', () => {
     test('200: should return all articles', () => {
         return request(app)
-        .get('/api/articles')
-        .expect(200)
-        .then(({ body }) => {
-            const { articles } = body
-            expect(articles).toBeSortedBy('created_at', { descending: true })
-            expect(articles.length).toBe(articlesData.length)
-            articles.forEach((article) => {
-                expect(article).toHaveProperty('author'), expect.any(String)
-                expect(article).toHaveProperty('title'), expect.any(String)
-                expect(article).toHaveProperty('article_id'), expect.any(Number)
-                expect(article).toHaveProperty('topic'), expect.any(String)
-                expect(article).toHaveProperty('created_at'), expect.any(String)
-                expect(article).toHaveProperty('votes'), expect.any(Number)
-                expect(article).toHaveProperty('article_img_url'), expect.any(String)
-                expect(article).toHaveProperty('comment_count'), expect.any(Number)
-                expect(article).not.toHaveProperty('body')
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body
+                expect(articles).toBeSortedBy('created_at', { descending: true })
+                expect(articles.length).toBe(articlesData.length)
+                articles.forEach((article) => {
+                    expect(article).toHaveProperty('author'), expect.any(String)
+                    expect(article).toHaveProperty('title'), expect.any(String)
+                    expect(article).toHaveProperty('article_id'), expect.any(Number)
+                    expect(article).toHaveProperty('topic'), expect.any(String)
+                    expect(article).toHaveProperty('created_at'), expect.any(String)
+                    expect(article).toHaveProperty('votes'), expect.any(Number)
+                    expect(article).toHaveProperty('article_img_url'), expect.any(String)
+                    expect(article).toHaveProperty('comment_count'), expect.any(Number)
+                    expect(article).not.toHaveProperty('body')
+                })
             })
-        })
     });
 });
 describe('GET /api/articles/:article_id', () => {
     test('200: should return an article object', () => {
         return request(app)
-        .get('/api/articles/1')
-        .expect(200)
-        .then(({ body }) => {
-            const { article } = body
-            expect(article.article_id).toBe(1)
-            expect(article).toHaveProperty('title'), expect.any(String)
-            expect(article).toHaveProperty('topic'), expect.any(String)
-            expect(article).toHaveProperty('author'), expect.any(String)
-            expect(article).toHaveProperty('body'), expect.any(String)
-            expect(article).toHaveProperty('created_at'), expect.any(String)
-            expect(article).toHaveProperty('votes'), expect.any(Number)
-            expect(article).toHaveProperty('article_img_url'), expect.any(String)
-        })  
+            .get('/api/articles/1')
+            .expect(200)
+            .then(({ body }) => {
+                const { article } = body
+                expect(article.article_id).toBe(1)
+                expect(article).toHaveProperty('title'), expect.any(String)
+                expect(article).toHaveProperty('topic'), expect.any(String)
+                expect(article).toHaveProperty('author'), expect.any(String)
+                expect(article).toHaveProperty('body'), expect.any(String)
+                expect(article).toHaveProperty('created_at'), expect.any(String)
+                expect(article).toHaveProperty('votes'), expect.any(Number)
+                expect(article).toHaveProperty('article_img_url'), expect.any(String)
+            })  
     });
     test('400: should handle invalid article_id', () => {
         return request(app)
-        .get('/api/articles/notAnId')
-        .expect(400)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Invalid input')
-        })
+            .get('/api/articles/notAnId')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
     });
     test('404: should handle an article_id that does not exist', () => {
         return request(app)
-        .get('/api/articles/99999999')
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Article not found')
-        })
+            .get('/api/articles/99999999')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Article not found')
+            })
     });
 });
 describe('GET /api/articles/:article_id/comments', () => {
     test('200: should return an array of comments for a given article', () => {
         return request(app)
-        .get('/api/articles/1/comments')
-        .expect(200)
-        .then(({ body }) => {
-            const { comments } = body
-            expect(comments.length).toBeGreaterThan(0)
-            const resultsArr = commentsData.filter((comment) => { return comment.article_id === 1 })
-            expect(comments.length).toBe(resultsArr.length)
-            comments.forEach((comment) => {
-                expect(comment).toHaveProperty('comment_id'), expect.any(Number)
-                expect(comment).toHaveProperty('votes'), expect.any(Number)
-                expect(comment).toHaveProperty('created_at'), expect.any(String)
-                expect(comment).toHaveProperty('author'), expect.any(String)
-                expect(comment).toHaveProperty('body'), expect.any(String)
-                expect(comment.article_id).toBe(1)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+                const { comments } = body
+                expect(comments.length).toBeGreaterThan(0)
+                const resultsArr = commentsData.filter((comment) => { return comment.article_id === 1 })
+                expect(comments.length).toBe(resultsArr.length)
+                comments.forEach((comment) => {
+                    expect(comment).toHaveProperty('comment_id'), expect.any(Number)
+                    expect(comment).toHaveProperty('votes'), expect.any(Number)
+                    expect(comment).toHaveProperty('created_at'), expect.any(String)
+                    expect(comment).toHaveProperty('author'), expect.any(String)
+                    expect(comment).toHaveProperty('body'), expect.any(String)
+                    expect(comment.article_id).toBe(1)
+                })
+                expect(comments).toBeSortedBy('created_at', { descending: true })
             })
-            expect(comments).toBeSortedBy('created_at', { descending: true })
-        })
     });
     test('200: should respond correctly for an article with no comments', () => {
         return request(app)
-        .get('/api/articles/2/comments')
-        .expect(200)
-        .then(({ body }) => {
-            expect(body.comments).toEqual([])
-        })
+            .get('/api/articles/2/comments')
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.comments).toEqual([])
+            })
     });
     test('400: should handle an invalid article_id', () => {
         return request(app)
-        .get('/api/articles/dogs/comments')
-        .expect(400)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Invalid input')
-        })
+            .get('/api/articles/dogs/comments')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
     });
     test('404: should return an error if no records found', () => {
         return request(app)
@@ -164,19 +164,19 @@ describe('POST /api/articles/:article_id/comments', () => {
             body: 'The human brain is an incredible pattern-matching machine.'
         }
         return request(app)
-        .post('/api/articles/1/comments')
-        .send(commentToPost)
-        .expect(201)
-        .then(({ body }) => {
-            const { commentAdded } = body
-            expect(Object.keys(commentAdded).length).toBe(6)
-            expect(commentAdded.article_id).toBe(1)
-            expect(commentAdded.author).toBe('lurker')
-            expect(commentAdded.body).toBe('The human brain is an incredible pattern-matching machine.')
-            expect(commentAdded).toHaveProperty('comment_id'), expect.any(Number)
-            expect(commentAdded).toHaveProperty('created_at'), expect.any(String)
-            expect(commentAdded).toHaveProperty('votes'), expect.any(Number)
-        })
+            .post('/api/articles/1/comments')
+            .send(commentToPost)
+            .expect(201)
+            .then(({ body }) => {
+                const { commentAdded } = body
+                expect(Object.keys(commentAdded).length).toBe(6)
+                expect(commentAdded.article_id).toBe(1)
+                expect(commentAdded.author).toBe('lurker')
+                expect(commentAdded.body).toBe('The human brain is an incredible pattern-matching machine.')
+                expect(commentAdded).toHaveProperty('comment_id'), expect.any(Number)
+                expect(commentAdded).toHaveProperty('created_at'), expect.any(String)
+                expect(commentAdded).toHaveProperty('votes'), expect.any(Number)
+            })
     });
     test('201: should ignore extra properties', () => {
         const commentToPost = {
@@ -186,19 +186,19 @@ describe('POST /api/articles/:article_id/comments', () => {
             notACol: 'whassup'
         }
         return request(app)
-        .post('/api/articles/1/comments')
-        .send(commentToPost)
-        .expect(201)
-        .then(({ body }) => {
-            const { commentAdded } = body
-            expect(Object.keys(commentAdded).length).toBe(6)
-            expect(commentAdded.article_id).toBe(1)
-            expect(commentAdded.author).toBe('lurker')
-            expect(commentAdded.body).toBe('The sheep brain is not an incredible pattern-matching machine.')
-            expect(commentAdded).toHaveProperty('comment_id'), expect.any(Number)
-            expect(commentAdded).toHaveProperty('created_at'), expect.any(String)
-            expect(commentAdded).toHaveProperty('votes'), expect.any(Number)
-        })
+            .post('/api/articles/1/comments')
+            .send(commentToPost)
+            .expect(201)
+            .then(({ body }) => {
+                const { commentAdded } = body
+                expect(Object.keys(commentAdded).length).toBe(6)
+                expect(commentAdded.article_id).toBe(1)
+                expect(commentAdded.author).toBe('lurker')
+                expect(commentAdded.body).toBe('The sheep brain is not an incredible pattern-matching machine.')
+                expect(commentAdded).toHaveProperty('comment_id'), expect.any(Number)
+                expect(commentAdded).toHaveProperty('created_at'), expect.any(String)
+                expect(commentAdded).toHaveProperty('votes'), expect.any(Number)
+            })
     });
     test('400: should handle invalid article_id', () => {
         const commentToPost = {
@@ -206,12 +206,12 @@ describe('POST /api/articles/:article_id/comments', () => {
             body: 'The human brain is an incredible pattern-matching machine.'
         }
         return request(app)
-        .post('/api/articles/NaN/comments')
-        .send(commentToPost)
-        .expect(400)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Invalid input')
-        })
+            .post('/api/articles/NaN/comments')
+            .send(commentToPost)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
     });
     test('400: should handle input with NULL for required columns', () => {
         const commentToPost = {
@@ -219,12 +219,12 @@ describe('POST /api/articles/:article_id/comments', () => {
             body: 'The human brain is an incredible pattern-matching machine.'
         }
         return request(app)
-        .post('/api/articles/NaN/comments')
-        .send(commentToPost)
-        .expect(400)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Invalid input')
-        })
+            .post('/api/articles/NaN/comments')
+            .send(commentToPost)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
     });
     test('400: should handle input with NULL for required columns', () => {
         const commentToPost = {
@@ -232,12 +232,12 @@ describe('POST /api/articles/:article_id/comments', () => {
             body: ''
         }
         return request(app)
-        .post('/api/articles/NaN/comments')
-        .send(commentToPost)
-        .expect(400)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Invalid input')
-        })
+            .post('/api/articles/NaN/comments')
+            .send(commentToPost)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
     });
     test('404: should handle error for unfound article_id', () => {
         const commentToPost = {
@@ -245,12 +245,12 @@ describe('POST /api/articles/:article_id/comments', () => {
             body: 'The human brain is an incredible pattern-matching machine.'
         }
         return request(app)
-        .post('/api/articles/99999/comments')
-        .send(commentToPost)
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Not found')
-        })
+            .post('/api/articles/99999/comments')
+            .send(commentToPost)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not found')
+            })
     });
     test('404: should handle error for unfound username', () => {
         const commentToPost = {
@@ -258,87 +258,87 @@ describe('POST /api/articles/:article_id/comments', () => {
             body: 'The human brain is an incredible pattern-matching machine.'
         }
         return request(app)
-        .post('/api/articles/1/comments')
-        .send(commentToPost)
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Not found')
-        })
+            .post('/api/articles/1/comments')
+            .send(commentToPost)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not found')
+            })
     });
 });
 describe('PATCH /api/articles/:article_id', () => {
     test('200: should update votes by increment value for an article', () => {
         const toSend = { inc_votes: 1 }
         return request(app)
-        .patch('/api/articles/1')
-        .send(toSend)
-        .expect(200)
-        .then(({ body }) => {
-            const { updatedArticle } = body
-            expect(updatedArticle.votes).toBe(101)
-        })
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(200)
+            .then(({ body }) => {
+                const { updatedArticle } = body
+                expect(updatedArticle.votes).toBe(101)
+            })
     });
     test('200: should update votes by increment value for an article', () => {
         const toSend = { inc_votes: -1 }
         return request(app)
-        .patch('/api/articles/1')
-        .send(toSend)
-        .expect(200)
-        .then(({ body }) => {
-            const { updatedArticle } = body
-            expect(updatedArticle.votes).toBe(99)
-        })
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(200)
+            .then(({ body }) => {
+                const { updatedArticle } = body
+                expect(updatedArticle.votes).toBe(99)
+            })
     });
     test('200: should ignore extra values', () => {
         const toSend = { inc_votes: -10, bananas: 5, body: 'oof' }
         return request(app)
-        .patch('/api/articles/1')
-        .send(toSend)
-        .expect(200)
-        .then(({ body }) => {
-            const { updatedArticle } = body
-            expect(updatedArticle.votes).toBe(90)
-            expect(Object.keys(updatedArticle).length).toBe(8)
-        })
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(200)
+            .then(({ body }) => {
+                const { updatedArticle } = body
+                expect(updatedArticle.votes).toBe(90)
+                expect(Object.keys(updatedArticle).length).toBe(8)
+            })
     });
     test('400: should handle if no value passed', () => {
         const toSend = { bananas: 5, body: 'oof' }
         return request(app)
-        .patch('/api/articles/1')
-        .send(toSend)
-        .expect(400)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Invalid input')
-        })
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
     });
     test('400: should handle if NaN', () => {
         const toSend = { inc_votes: 'NaN' }
         return request(app)
-        .patch('/api/articles/1')
-        .send(toSend)
-        .expect(400)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Invalid input')
-        })
+            .patch('/api/articles/1')
+            .send(toSend)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
     });
     test('400: should handle if article_id is invalid', () => {
         const toSend = { inc_votes: 1 }
         return request(app)
-        .patch('/api/articles/NaN')
-        .send(toSend)
-        .expect(400)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Invalid input')
-        })
+            .patch('/api/articles/NaN')
+            .send(toSend)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Invalid input')
+            })
     });
     test('404: should handle if article_id does not exist', () => {
         const toSend = { inc_votes: 1 }
         return request(app)
-        .patch('/api/articles/99999999')
-        .send(toSend)
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Article not found')
-        })
+            .patch('/api/articles/99999999')
+            .send(toSend)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Article not found')
+            })
     });
 });
