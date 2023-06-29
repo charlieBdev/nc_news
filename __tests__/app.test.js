@@ -266,3 +266,79 @@ describe('POST /api/articles/:article_id/comments', () => {
         })
     });
 });
+describe('PATCH /api/articles/:article_id', () => {
+    test('200: should update votes by increment value for an article', () => {
+        const toSend = { inc_votes: 1 }
+        return request(app)
+        .patch('/api/articles/1')
+        .send(toSend)
+        .expect(200)
+        .then(({ body }) => {
+            const { updatedArticle } = body
+            expect(updatedArticle.votes).toBe(101)
+        })
+    });
+    test('200: should update votes by increment value for an article', () => {
+        const toSend = { inc_votes: -1 }
+        return request(app)
+        .patch('/api/articles/1')
+        .send(toSend)
+        .expect(200)
+        .then(({ body }) => {
+            const { updatedArticle } = body
+            expect(updatedArticle.votes).toBe(99)
+        })
+    });
+    test('200: should ignore extra values', () => {
+        const toSend = { inc_votes: -10, bananas: 5, body: 'oof' }
+        return request(app)
+        .patch('/api/articles/1')
+        .send(toSend)
+        .expect(200)
+        .then(({ body }) => {
+            const { updatedArticle } = body
+            expect(updatedArticle.votes).toBe(90)
+            expect(Object.keys(updatedArticle).length).toBe(8)
+        })
+    });
+    test('400: should handle if no value passed', () => {
+        const toSend = { bananas: 5, body: 'oof' }
+        return request(app)
+        .patch('/api/articles/1')
+        .send(toSend)
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Invalid input')
+        })
+    });
+    test('400: should handle if NaN', () => {
+        const toSend = { inc_votes: 'NaN' }
+        return request(app)
+        .patch('/api/articles/1')
+        .send(toSend)
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Invalid input')
+        })
+    });
+    test('400: should handle if article_id is invalid', () => {
+        const toSend = { inc_votes: 1 }
+        return request(app)
+        .patch('/api/articles/NaN')
+        .send(toSend)
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Invalid input')
+        })
+    });
+    test('404: should handle if article_id does not exist', () => {
+        const toSend = { inc_votes: 1 }
+        return request(app)
+        .patch('/api/articles/99999999')
+        .send(toSend)
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Article not found')
+        })
+    });
+});
