@@ -15,7 +15,7 @@ exports.selectArticleById = (article_id) => {
 exports.selectAllArticles = (topic, sort_by='created_at', order='DESC') => {
   const validSortColumns = ['created_at', 'votes', 'topic', 'author', 'article_id']
   const validOrderBy = ['ASC', 'DESC']
-  if (!validSortColumns.includes(sort_by) || !validOrderBy.includes(order)) {
+  if (!validSortColumns.includes(sort_by) || !validOrderBy.includes(order.toUpperCase())) {
     return Promise.reject({ status: 400, msg: 'Bad request'})
   }
   
@@ -29,7 +29,7 @@ exports.selectAllArticles = (topic, sort_by='created_at', order='DESC') => {
   }
   if (sort_by) {
     queryStr += `
-      GROUP BY article_id(articles) ORDER BY ${sort_by}(articles) DESC;
+      GROUP BY article_id(articles) ORDER BY ${sort_by}(articles) ${order};
     `
   }
   

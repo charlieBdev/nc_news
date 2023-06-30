@@ -582,7 +582,7 @@ describe("GET /api/users", () => {
       })
   })
 })
-describe("GET /api/articles?topic", () => {
+describe("GET /api/articles?topic=TOPIC", () => {
   test("200: should allow articles to be filtered by topic", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
@@ -626,7 +626,7 @@ describe("GET /api/articles?topic", () => {
   })
 })
 
-describe('GET /api/articles?sort_by', () => {
+describe('GET /api/articles?sort_by=COLUMN&order=ORDER', () => {
   test('200: should sort articles by votes', () => {
     return request(app)
       .get('/api/articles?sort_by=votes')
@@ -654,6 +654,54 @@ describe('GET /api/articles?sort_by', () => {
         expect(articles).toBeSortedBy('created_at', { descending: true })
       })
   });
+  test('200: should work in combination with a topic query', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&sort_by=author')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy('author', { descending: true })
+        articles.forEach((article) => {
+          expect(article.topic).toBe('mitch')
+        })
+      })
+  });
+  test('200: should allow sorting in ASC order', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&sort_by=author&order=ASC')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy('author', { descending: false })
+        articles.forEach((article) => {
+          expect(article.topic).toBe('mitch')
+        })
+      })
+  });
+  test('200: should allow sorting in DESC order when provided (note DESC is default)', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&sort_by=author&order=DESC')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy('author', { descending: true })
+        articles.forEach((article) => {
+          expect(article.topic).toBe('mitch')
+        })
+      })
+  });
+  test('200: should allow sorting in DESC order when passed as lowercase', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&sort_by=author&order=desc')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy('author', { descending: true })
+        articles.forEach((article) => {
+          expect(article.topic).toBe('mitch')
+        })
+      })
+  });
   test('400: should not allow sort_by on a column not greenlisted', () => {
     return request(app)
       .get('/api/articles?sort_by=article_img_url')
@@ -665,6 +713,14 @@ describe('GET /api/articles?sort_by', () => {
   test('400: should not allow sort_by on an invalid column', () => {
     return request(app)
       .get('/api/articles?sort_by=INVALIDSORTCOLUMN')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
+  });
+  test('400: should not allow invalid sort queries', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&sort_by=author&order=UPSIDEDOWN')
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Bad request')
