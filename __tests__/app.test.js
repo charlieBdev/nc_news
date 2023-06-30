@@ -96,6 +96,17 @@ describe("GET /api/articles/:article_id", () => {
         expect(article).toHaveProperty("article_img_url"), expect.any(String)
       })
   })
+  test("200: should return an article object with comment_count", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body
+        expect(article.article_id).toBe(1)
+        expect(article).toHaveProperty("comment_count")
+        expect(article.comment_count).toBe('11')
+      })
+  })
   test("400: should handle invalid article_id", () => {
     return request(app)
       .get("/api/articles/notAnId")
