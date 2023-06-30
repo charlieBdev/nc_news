@@ -69,8 +69,8 @@ exports.incrementArticleVotes = (req, res, next) => {
     Promise.all(promises)
 
     .then((resolvedPromises) => {
-        const updatedArticle = resolvedPromises[0]
-        res.status(200).send({ updatedArticle })
+        const updatedArticleVotes = resolvedPromises[0]
+        res.status(200).send({ updatedArticleVotes })
     })
     .catch(next)
 }

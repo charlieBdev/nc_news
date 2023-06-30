@@ -282,8 +282,8 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(toSend)
       .expect(200)
       .then(({ body }) => {
-        const { updatedArticle } = body
-        expect(updatedArticle.votes).toBe(101)
+        const { updatedArticleVotes } = body
+        expect(updatedArticleVotes.votes).toBe(101)
       })
   })
   test("200: should update votes by increment value for an article", () => {
@@ -293,8 +293,8 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(toSend)
       .expect(200)
       .then(({ body }) => {
-        const { updatedArticle } = body
-        expect(updatedArticle.votes).toBe(99)
+        const { updatedArticleVotes } = body
+        expect(updatedArticleVotes.votes).toBe(99)
       })
   })
   test("200: should ignore extra values", () => {
@@ -304,9 +304,9 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(toSend)
       .expect(200)
       .then(({ body }) => {
-        const { updatedArticle } = body
-        expect(updatedArticle.votes).toBe(90)
-        expect(Object.keys(updatedArticle).length).toBe(8)
+        const { updatedArticleVotes } = body
+        expect(updatedArticleVotes.votes).toBe(90)
+        expect(Object.keys(updatedArticleVotes).length).toBe(8)
       })
   })
 })
@@ -497,8 +497,8 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(toSend)
       .expect(200)
       .then(({ body }) => {
-        const { updatedArticle } = body
-        expect(updatedArticle.votes).toBe(101)
+        const { updatedArticleVotes } = body
+        expect(updatedArticleVotes.votes).toBe(101)
       })
   })
   test("200: should update votes by increment value for an article", () => {
@@ -508,8 +508,8 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(toSend)
       .expect(200)
       .then(({ body }) => {
-        const { updatedArticle } = body
-        expect(updatedArticle.votes).toBe(99)
+        const { updatedArticleVotes } = body
+        expect(updatedArticleVotes.votes).toBe(99)
       })
   })
   test("200: should ignore extra values", () => {
@@ -519,9 +519,9 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(toSend)
       .expect(200)
       .then(({ body }) => {
-        const { updatedArticle } = body
-        expect(updatedArticle.votes).toBe(90)
-        expect(Object.keys(updatedArticle).length).toBe(8)
+        const { updatedArticleVotes } = body
+        expect(updatedArticleVotes.votes).toBe(90)
+        expect(Object.keys(updatedArticleVotes).length).toBe(8)
       })
   })
   test("400: should handle if no value passed", () => {
