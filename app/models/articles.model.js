@@ -12,7 +12,13 @@ exports.selectArticleById = (article_id) => {
   })
 }
 
-exports.selectAllArticles = (topic) => {
+exports.selectAllArticles = (topic, sort_by='created_at', order='DESC') => {
+  const validSortColumns = ['created_at', 'votes', 'topic', 'author', 'article_id']
+  const validOrderBy = ['ASC', 'DESC']
+  if (!validSortColumns.includes(sort_by) || !validOrderBy.includes(order)) {
+    return Promise.reject({ status: 400, msg: 'Bad request'})
+  }
+  
   let queryValues = []
   let queryStr = `
     SELECT article_id(articles), author(articles), title(articles), topic(articles), created_at(articles), votes(articles), article_img_url(articles), COUNT(article_id(articles)) AS comment_count FROM articles LEFT JOIN comments ON article_id(articles) = article_id(comments) 
@@ -21,9 +27,12 @@ exports.selectAllArticles = (topic) => {
     queryValues.push(topic)
     queryStr += `WHERE topic(articles) = $1 `
   }
-  queryStr += `
-    GROUP BY article_id(articles) ORDER BY created_at(articles) DESC;
-  `
+  if (sort_by) {
+    queryStr += `
+      GROUP BY article_id(articles) ORDER BY ${sort_by}(articles) DESC;
+    `
+  }
+  
   return db.query(queryStr, queryValues).then(({ rows }) => {
     return rows
   })
@@ -60,4 +69,3 @@ exports.changeArticleVotes = (article_id, inc_votes) => {
     return rows[0]
   })
 }
-

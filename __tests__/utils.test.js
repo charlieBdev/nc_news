@@ -1,3 +1,4 @@
+const { checkTopicExists } = require("../app/utils");
 const {
   convertTimestampToDate,
   createRef,

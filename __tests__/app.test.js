@@ -621,7 +621,53 @@ describe("GET /api/articles?topic", () => {
       .get("/api/articles?topic=pizza")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Topic not found")
+        expect(body.msg).toBe("Column not found")
       })
   })
 })
+
+describe('GET /api/articles?sort_by', () => {
+  test('200: should sort articles by votes', () => {
+    return request(app)
+      .get('/api/articles?sort_by=votes')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy('votes', { descending: true })
+      })
+  });
+  test('200: should sort articles by author', () => {
+    return request(app)
+      .get('/api/articles?sort_by=author')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy('author', { descending: true })
+      })
+  });
+  test('200: should sort by default (created_at) if no sort_by given', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy('created_at', { descending: true })
+      })
+  });
+  test('400: should not allow sort_by on a column not greenlisted', () => {
+    return request(app)
+      .get('/api/articles?sort_by=article_img_url')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
+  });
+  test('400: should not allow sort_by on an invalid column', () => {
+    return request(app)
+      .get('/api/articles?sort_by=INVALIDSORTCOLUMN')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request')
+      })
+  });
+});
