@@ -9,7 +9,10 @@ exports.handlePsqlErrors = (err, req, res, next) => {
     res.status(400).send({ msg: "Invalid input" })
   } else if (err.code === "23503") {
     res.status(404).send({ msg: "Not found" })
+  } else if (err.code === "42703") {
+    res.status(404).send({ msg: "Topic not found" })
   } else next(err)
+
 }
 
 exports.handleServerErrors = (err, req, res, next) => {

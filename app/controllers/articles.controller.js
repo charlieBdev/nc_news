@@ -1,4 +1,5 @@
 const { selectArticleById, selectAllArticles, selectArticleComments, insertArticleComment, changeArticleVotes } = require("../models/articles.model")
+const { checkColumnExists } = require("../utils")
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params
@@ -10,10 +11,24 @@ exports.getArticleById = (req, res, next) => {
     .catch(next)
 }
 
-exports.getAllArticles = (_, res, next) => {
-    selectAllArticles()
-    .then((articles) => {
-        res.status(200).send({ articles })
+exports.getAllArticles = (req, res, next) => {
+    const { topic, sort_by, order } = req.query
+
+    const promises = [selectAllArticles(topic, sort_by, order)]
+
+    if (topic) {
+        promises.push(checkColumnExists(topic))
+    }
+
+    Promise.all(promises)
+
+    .then((resolvedPromises) => {
+        const articles = resolvedPromises[0]
+        if (articles.length === 0) {
+            res.status(200).send([])
+        } else {
+            res.status(200).send({ articles })
+        }
     })
     .catch(next)
 }
@@ -54,8 +69,8 @@ exports.incrementArticleVotes = (req, res, next) => {
     Promise.all(promises)
 
     .then((resolvedPromises) => {
-        const updatedArticle = resolvedPromises[0]
-        res.status(200).send({ updatedArticle })
+        const updatedArticleVotes = resolvedPromises[0]
+        res.status(200).send({ updatedArticleVotes })
     })
     .catch(next)
 }
