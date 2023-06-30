@@ -80,7 +80,7 @@ describe("GET /api/articles", () => {
   })
 })
 describe("GET /api/articles/:article_id", () => {
-  test("200: should return an article object", () => {
+  test("200: should return an article object with comment_count", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
@@ -94,6 +94,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(article).toHaveProperty("created_at"), expect.any(String)
         expect(article).toHaveProperty("votes"), expect.any(Number)
         expect(article).toHaveProperty("article_img_url"), expect.any(String)
+        expect(article).toHaveProperty("comment_count"), expect.any(Number)
       })
   })
   test("400: should handle invalid article_id", () => {
