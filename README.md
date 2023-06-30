@@ -12,7 +12,7 @@ You will need:
 1. [Node.js](https://nodejs.org/en/download) v19.8.1 or above
 2. [Postgres](https://postgresapp.com/downloads.html) 14.7 or above
 
-Link to the hosted version - <https://nc-news-qvv1.onrender.com/api> 🚀🚀🚀
+See the live [API](https://nc-news-qvv1.onrender.com/api) 🚀🚀🚀
 
 ### Project Setup
 
