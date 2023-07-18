@@ -43,7 +43,7 @@ exports.selectAllArticles = (topic, sort_by='created_at', order='DESC') => {
 
 exports.selectArticleComments = (article_id) => {
   const queryStr = `
-    SELECT * FROM comments JOIN articles ON article_id(comments) = article_id(articles) WHERE article_id(comments) = $1 ORDER BY created_at(comments) ASC; 
+    SELECT comment_id(comments), votes(comments), created_at(comments), author(comments), body(comments), article_id(comments) FROM comments JOIN articles ON article_id(comments) = article_id(articles) WHERE article_id(comments) = $1 ORDER BY created_at(comments) DESC; 
   `
   return db.query(queryStr, [article_id]).then(({ rows }) => {
     return rows

@@ -39,7 +39,6 @@ exports.getArticleComments = (req, res, next) => {
     const promises = [selectArticleComments(article_id), selectArticleById(article_id)]
 
     Promise.all(promises)
-
     .then((resolvedPromises) => {
         const comments = resolvedPromises[0]
         if (!comments) {
