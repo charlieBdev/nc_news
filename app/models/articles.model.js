@@ -16,7 +16,7 @@ exports.selectArticleById = (article_id) => {
 }
 
 exports.selectAllArticles = (topic, sort_by='created_at', order='DESC') => {
-  const validSortColumns = ['created_at', 'votes', 'topic', 'author', 'article_id']
+  const validSortColumns = ['created_at', 'votes', 'topic', 'author', 'article_id', 'comment_count']
   const validOrderBy = ['ASC', 'DESC']
   if (!validSortColumns.includes(sort_by) || !validOrderBy.includes(order.toUpperCase())) {
     return Promise.reject({ status: 400, msg: 'Bad request'})
