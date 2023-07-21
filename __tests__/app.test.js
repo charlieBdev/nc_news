@@ -647,6 +647,15 @@ describe('GET /api/articles?sort_by=COLUMN&order=ORDER', () => {
         expect(articles).toBeSortedBy('votes', { descending: true })
       })
   });
+  test.only('200: should sort articles by comment_count', () => {
+    return request(app)
+    .get('/api/articles?sort_by=comment_count')
+    .expect(200)
+    .then(({ body }) => {
+      const { articles } = body
+      expect(articles).toBeSortedBy(Number('comment_count'), { descending: true })
+    })
+  });
   test('200: should sort articles by author', () => {
     return request(app)
       .get('/api/articles?sort_by=author')

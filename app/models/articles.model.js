@@ -32,10 +32,9 @@ exports.selectAllArticles = (topic, sort_by='created_at', order='DESC') => {
   }
   if (sort_by) {
     queryStr += `
-      GROUP BY article_id(articles) ORDER BY ${sort_by}(articles) ${order};
+      GROUP BY article_id(articles) ORDER BY ${sort_by} ${order};
     `
   }
-  
   return db.query(queryStr, queryValues).then(({ rows }) => {
     return rows
   })
