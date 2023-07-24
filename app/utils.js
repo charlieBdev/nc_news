@@ -10,7 +10,7 @@ exports.checkColumnExists = (column) => {
     return db.query(queryStr, [column])
     .then(({ rows }) => {
         if (rows.length === 0) {
-            return Promise.reject({ status: 404, msg: "Column not found" })
+            return Promise.reject({ status: 404, msg: "Topic not found" })
         }
         return rows[0]
     })
