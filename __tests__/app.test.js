@@ -104,7 +104,7 @@ describe("GET /api/articles/:article_id", () => {
         const { article } = body
         expect(article.article_id).toBe(1)
         expect(article).toHaveProperty("comment_count")
-        expect(article.comment_count).toBe('11')
+        expect(article.comment_count).toBe("11")
       })
   })
   test("400: should handle invalid article_id", () => {
@@ -322,70 +322,70 @@ describe("PATCH /api/articles/:article_id", () => {
   })
 })
 describe("DELETE /api/comments/:comment_id", () => {
-    test("204: should delete a comment by comment_id", () => {
-      return request(app)
-        .delete("/api/comments/1")
-        .expect(204)
-        .then(({ body }) => {
-          expect(body).toEqual({})
-        })
-    })
-    test("400: should handle if no value passed", () => {
-      const toSend = { bananas: 5, body: "oof" }
-      return request(app)
-        .patch("/api/articles/1")
-        .send(toSend)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid input")
-        })
-    })
-    test("400: should handle if NaN", () => {
-      const toSend = { inc_votes: "NaN" }
-      return request(app)
-        .patch("/api/articles/1")
-        .send(toSend)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid input")
-        })
-    })
-    test("400: should handle if article_id is invalid", () => {
-      const toSend = { inc_votes: 1 }
-      return request(app)
-        .patch("/api/articles/NaN")
-        .send(toSend)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid input")
-        })
-    })
-    test("400: should handle error for invalid comment_id", () => {
-      return request(app)
-        .delete("/api/comments/NaN")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid input")
-        })
-    })
-    test("404: should handle if article_id does not exist", () => {
-      const toSend = { inc_votes: 1 }
-      return request(app)
-        .patch("/api/articles/99999999")
-        .send(toSend)
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Article not found")
-        })
-    })
-    test("404: should handle error when comment_id not found", () => {
-        return request(app)
-        .delete("/api/comments/999999999")
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe("Comment not found")
-        })
-    })
+  test("204: should delete a comment by comment_id", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({})
+      })
+  })
+  test("400: should handle if no value passed", () => {
+    const toSend = { bananas: 5, body: "oof" }
+    return request(app)
+      .patch("/api/articles/1")
+      .send(toSend)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input")
+      })
+  })
+  test("400: should handle if NaN", () => {
+    const toSend = { inc_votes: "NaN" }
+    return request(app)
+      .patch("/api/articles/1")
+      .send(toSend)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input")
+      })
+  })
+  test("400: should handle if article_id is invalid", () => {
+    const toSend = { inc_votes: 1 }
+    return request(app)
+      .patch("/api/articles/NaN")
+      .send(toSend)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input")
+      })
+  })
+  test("400: should handle error for invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/NaN")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input")
+      })
+  })
+  test("404: should handle if article_id does not exist", () => {
+    const toSend = { inc_votes: 1 }
+    return request(app)
+      .patch("/api/articles/99999999")
+      .send(toSend)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found")
+      })
+  })
+  test("404: should handle error when comment_id not found", () => {
+    return request(app)
+      .delete("/api/comments/999999999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found")
+      })
+  })
 })
 describe("POST /api/articles/:article_id/comments", () => {
   test("201: should add a comment for an article and respond with the posted comment", () => {
@@ -632,118 +632,120 @@ describe("GET /api/articles?topic=TOPIC", () => {
       .get("/api/articles?topic=pizza")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Column not found")
+        expect(body.msg).toBe("Topic not found")
       })
   })
 })
 
-describe('GET /api/articles?sort_by=COLUMN&order=ORDER', () => {
-  test('200: should sort articles by votes', () => {
+describe("GET /api/articles?sort_by=COLUMN&order=ORDER", () => {
+  test("200: should sort articles by votes", () => {
     return request(app)
-      .get('/api/articles?sort_by=votes')
+      .get("/api/articles?sort_by=votes")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body
-        expect(articles).toBeSortedBy('votes', { descending: true })
+        expect(articles).toBeSortedBy("votes", { descending: true })
       })
-  });
-  test.only('200: should sort articles by comment_count', () => {
+  })
+  test("200: should sort articles by comment_count", () => {
     return request(app)
-    .get('/api/articles?sort_by=comment_count')
-    .expect(200)
-    .then(({ body }) => {
-      const { articles } = body
-      expect(articles).toBeSortedBy(Number('comment_count'), { descending: true })
-    })
-  });
-  test('200: should sort articles by author', () => {
-    return request(app)
-      .get('/api/articles?sort_by=author')
+      .get("/api/articles?sort_by=comment_count")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body
-        expect(articles).toBeSortedBy('author', { descending: true })
-      })
-  });
-  test('200: should sort by default (created_at) if no sort_by given', () => {
-    return request(app)
-      .get('/api/articles')
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body
-        expect(articles).toBeSortedBy('created_at', { descending: true })
-      })
-  });
-  test('200: should work in combination with a topic query', () => {
-    return request(app)
-      .get('/api/articles?topic=mitch&sort_by=author')
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body
-        expect(articles).toBeSortedBy('author', { descending: true })
-        articles.forEach((article) => {
-          expect(article.topic).toBe('mitch')
+        expect(articles).toBeSortedBy(Number("comment_count"), {
+          descending: true,
         })
       })
-  });
-  test('200: should allow sorting in ASC order', () => {
+  })
+  test("200: should sort articles by author", () => {
     return request(app)
-      .get('/api/articles?topic=mitch&sort_by=author&order=ASC')
+      .get("/api/articles?sort_by=author")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body
-        expect(articles).toBeSortedBy('author', { descending: false })
-        articles.forEach((article) => {
-          expect(article.topic).toBe('mitch')
-        })
+        expect(articles).toBeSortedBy("author", { descending: true })
       })
-  });
-  test('200: should allow sorting in DESC order when provided (note DESC is default)', () => {
+  })
+  test("200: should sort by default (created_at) if no sort_by given", () => {
     return request(app)
-      .get('/api/articles?topic=mitch&sort_by=author&order=DESC')
+      .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body
-        expect(articles).toBeSortedBy('author', { descending: true })
-        articles.forEach((article) => {
-          expect(article.topic).toBe('mitch')
-        })
+        expect(articles).toBeSortedBy("created_at", { descending: true })
       })
-  });
-  test('200: should allow sorting in DESC order when passed as lowercase', () => {
+  })
+  test("200: should work in combination with a topic query", () => {
     return request(app)
-      .get('/api/articles?topic=mitch&sort_by=author&order=desc')
+      .get("/api/articles?topic=mitch&sort_by=author")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body
-        expect(articles).toBeSortedBy('author', { descending: true })
+        expect(articles).toBeSortedBy("author", { descending: true })
         articles.forEach((article) => {
-          expect(article.topic).toBe('mitch')
+          expect(article.topic).toBe("mitch")
         })
       })
-  });
-  test('400: should not allow sort_by on a column not greenlisted', () => {
+  })
+  test("200: should allow sorting in ASC order", () => {
     return request(app)
-      .get('/api/articles?sort_by=article_img_url')
+      .get("/api/articles?topic=mitch&sort_by=author&order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy("author", { descending: false })
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch")
+        })
+      })
+  })
+  test("200: should allow sorting in DESC order when provided (note DESC is default)", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=author&order=DESC")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy("author", { descending: true })
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch")
+        })
+      })
+  })
+  test("200: should allow sorting in DESC order when passed as lowercase", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=author&order=desc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy("author", { descending: true })
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch")
+        })
+      })
+  })
+  test("400: should not allow sort_by on a column not greenlisted", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_img_url")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe("Bad request")
       })
-  });
-  test('400: should not allow sort_by on an invalid column', () => {
+  })
+  test("400: should not allow sort_by on an invalid column", () => {
     return request(app)
-      .get('/api/articles?sort_by=INVALIDSORTCOLUMN')
+      .get("/api/articles?sort_by=INVALIDSORTCOLUMN")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe("Bad request")
       })
-  });
-  test('400: should not allow invalid sort queries', () => {
+  })
+  test("400: should not allow invalid sort queries", () => {
     return request(app)
-      .get('/api/articles?topic=mitch&sort_by=author&order=UPSIDEDOWN')
+      .get("/api/articles?topic=mitch&sort_by=author&order=UPSIDEDOWN")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Bad request')
+        expect(body.msg).toBe("Bad request")
       })
-  });
-});
+  })
+})
