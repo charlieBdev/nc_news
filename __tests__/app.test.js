@@ -636,7 +636,6 @@ describe("GET /api/articles?topic=TOPIC", () => {
       })
   })
 })
-
 describe("GET /api/articles?sort_by=COLUMN&order=ORDER", () => {
   test("200: should sort articles by votes", () => {
     return request(app)
@@ -665,6 +664,27 @@ describe("GET /api/articles?sort_by=COLUMN&order=ORDER", () => {
       .then(({ body }) => {
         const { articles } = body
         expect(articles).toBeSortedBy("author", { descending: true })
+      })
+  })
+  test("200: should sort articles by title ASC", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy("title", { descending: false })
+      })
+  })
+  test("200: should sort articles by title DESC with a topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=title&order=desc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toBeSortedBy("title", { descending: true })
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch")
+        })
       })
   })
   test("200: should sort by default (created_at) if no sort_by given", () => {

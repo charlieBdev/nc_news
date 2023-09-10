@@ -23,6 +23,7 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "DESC") => {
     "author",
     "article_id",
     "comment_count",
+    "title",
   ]
   const validOrderBy = ["ASC", "DESC"]
   if (
@@ -38,7 +39,7 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "DESC") => {
   `
   if (topic) {
     queryValues.push(topic)
-    queryStr += `WHERE topic(articles) = $1 `
+    queryStr += ` WHERE topic(articles) = $1 `
   }
 
   queryStr += `
