@@ -1,5 +1,5 @@
 const app = require('./app/app');
-const { default: cronJob } = require('./pinger/pinger');
+const cronJob = require('./pinger/pinger.js');
 const { PORT = 9090 } = process.env;
 
 app.listen(PORT, () => {

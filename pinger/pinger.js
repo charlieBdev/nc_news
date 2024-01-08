@@ -1,5 +1,5 @@
-import http from 'https';
-import cron from 'node-cron';
+const http = require('https');
+const cron = require('node-cron');
 
 const cronJob = () => {
 	return cron.schedule('*/14 * * * *', () => {
@@ -9,4 +9,4 @@ const cronJob = () => {
 	});
 };
 
-export default cronJob;
+module.exports = cronJob;
