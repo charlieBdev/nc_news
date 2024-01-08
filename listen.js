@@ -7,5 +7,5 @@ app.listen(PORT, () => {
 });
 
 if (process.env.NODE_ENV === 'production') {
-	cronJob.start();
+	cronJob().start();
 }
